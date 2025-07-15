@@ -1,0 +1,78 @@
+<div class="container">
+  <h2>Live Matches</h2>
+
+  @if (isLoading) {
+    <div class="loading">
+      Loading matches...
+    </div>
+  }
+
+  @if (errorMessage) {
+    <div class="error">
+      {{ errorMessage }}
+    </div>
+  }
+
+  @if (matches.length > 0) {
+    <div class="matches-container">
+      @for (match of matches; track match.id) {
+        <div class="match-card">
+          <div class="match-header">
+            <h3>Match #{{ match.id }}</h3>
+            <span class="status" [ngClass]="match.matchStatus">{{ match.matchStatus }}</span>
+          </div>
+
+          <div class="match-details">
+            <div class="teams">
+              <span class="team">{{ match.team1 }}</span>
+              <span class="score">{{ match.team1Score || 0 }} - {{ match.team2Score || 0 }}</span>
+              <span class="team">{{ match.team2 }}</span>
+            </div>
+
+            <div class="match-info">
+              <small>Sport: {{ match.sportType }}</small>
+              <small>Date: {{ match.date | date:'short' }}</small>
+            </div>
+          </div>
+
+          @if (canUpdateScore()) {
+            <div class="score-update-section">
+              <h4>Update Score</h4>
+              <div class="score-inputs">
+                <div class="team-score">
+                  <label for="team1Score_{{ match.id }}">{{ match.team1 }} Score:</label>
+                  <input
+                    type="number"
+                    id="team1Score_{{ match.id }}"
+                    [(ngModel)]="match.team1Score"
+                    min="0"
+                    class="score-input">
+                </div>
+                <div class="team-score">
+                  <label for="team2Score_{{ match.id }}">{{ match.team2 }} Score:</label>
+                  <input
+                    type="number"
+                    id="team2Score_{{ match.id }}"
+                    [(ngModel)]="match.team2Score"
+                    min="0"
+                    class="score-input">
+                </div>
+                <button
+                  (click)="updateMatchScore(match)"
+                  class="update-score-btn">
+                  Update Score
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="no-matches">
+      <p>No matches available</p>
+    </div>
+  }
+
+  <button (click)="loadMatches()" class="refresh-btn">Refresh</button>
+</div>
