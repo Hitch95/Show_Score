@@ -1,4 +1,10 @@
 <div class="container">
+  @if (currentUserRole) {
+    <div class="logout-container">
+      <button class="logout-btn" (click)="logout()">Logout</button>
+    </div>
+  }
+
   <h2>Live Matches</h2>
 
   @if (isLoading) {

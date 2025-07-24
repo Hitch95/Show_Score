@@ -114,6 +114,7 @@ export class ShowScore implements OnInit {
           this.matches[index] = updatedMatch;
         }
         this.errorMessage = '';
+        alert('The score has been updated');
       },
       error: (error) => {
         this.errorMessage = 'Error updating score: ' + error.message;
@@ -161,5 +162,10 @@ export class ShowScore implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  logout(): void {
+    localStorage.removeItem('currentUser');
+    window.location.href = '/login';
   }
 }
