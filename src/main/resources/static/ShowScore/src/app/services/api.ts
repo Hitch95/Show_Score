@@ -23,6 +23,11 @@ export class Api {
     return this.http.get<Match>(`${this.baseUrl}/${id}`);
   }
 
+  // Create a new match (ADMIN only)
+  createMatch(match: Partial<Match>): Observable<Match> {
+    return this.http.post<Match>(`${this.adminBaseUrl}`, match);
+  }
+
   // Update match score for ADMIN
   updateMatchScoreAdmin(scoreUpdate: {id: number, team1Score: number, team2Score: number}): Observable<Match> {
     const params = new HttpParams()

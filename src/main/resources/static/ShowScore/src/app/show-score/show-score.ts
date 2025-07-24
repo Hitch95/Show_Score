@@ -15,13 +15,43 @@ export class ShowScore implements OnInit {
   matches: Match[] = [];
   errorMessage: string = '';
   isLoading = false;
-  private currentUserRole: string | null = null;
+  currentUserRole: string | null = null;
+  showAddMatchForm = false;
+  newMatch: Partial<Match> = {
+    team1: '',
+    team2: '',
+    team1Score: 0,
+    team2Score: 0,
+    matchStatus: 'WAITING',
+    sportType: '',
+    date: new Date().toISOString().split('T')[0], // Today's date in YYYY-MM-DD format
+    startTime: '',
+    endTime: ''
+  };
 
   constructor(private api: Api) {}
 
   ngOnInit(): void {
     this.loadMatches();
     this.getCurrentUserRole();
+  }
+
+  toggleAddMatchForm(): void {
+    this.showAddMatchForm = !this.showAddMatchForm;
+    if (this.showAddMatchForm) {
+      // Reset form when opening
+      this.newMatch = {
+        team1: '',
+        team2: '',
+        team1Score: 0,
+        team2Score: 0,
+        matchStatus: 'WAITING',
+        sportType: '',
+        date: new Date().toISOString().split('T')[0],
+        startTime: '',
+        endTime: ''
+      };
+    }
   }
 
   loadMatches(): void {
@@ -38,12 +68,25 @@ export class ShowScore implements OnInit {
     });
   }
 
-  canUpdateScore(): boolean {
-    return this.currentUserRole === 'ADMIN' || this.currentUserRole === 'ORGANIZER';
+  canUpdateScore(match?: Match): boolean {
+    // Base permission check
+    const hasPermission = this.currentUserRole === 'ADMIN' || this.currentUserRole === 'ORGANIZER';
+
+    // If no match is provided or user doesn't have permission, return the permission check result
+    if (!match || !hasPermission) {
+      return hasPermission;
+    }
+
+    // For FINISHED matches, admins cannot update scores
+    if (match.matchStatus === 'FINISHED' && this.currentUserRole === 'ADMIN') {
+      return false;
+    }
+
+    return true;
   }
 
   updateMatchScore(match: Match): void {
-    if (!this.canUpdateScore()) {
+    if (!this.canUpdateScore(match)) {
       this.errorMessage = 'You do not have permission to update scores';
       return;
     }
@@ -85,5 +128,38 @@ export class ShowScore implements OnInit {
       const user = JSON.parse(userString);
       this.currentUserRole = user.role;
     }
+  }
+
+  createNewMatch(): void {
+    if (!this.currentUserRole || this.currentUserRole !== 'ADMIN') {
+      this.errorMessage = 'Only administrators can add new matches';
+      return;
+    }
+
+    // Validate required fields
+    if (!this.newMatch.team1 || !this.newMatch.team2 || !this.newMatch.sportType ||
+        !this.newMatch.date || !this.newMatch.startTime) {
+      this.errorMessage = 'Please fill in all required fields';
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.api.createMatch(this.newMatch).subscribe({
+      next: (createdMatch) => {
+        // Add the new match to the list
+        this.matches.unshift(createdMatch);
+        this.isLoading = false;
+        this.showAddMatchForm = false; // Hide the form after successful creation
+
+        // Optional: Show success message
+        this.errorMessage = ''; // Clear any previous error
+      },
+      error: (error) => {
+        this.errorMessage = 'Error creating match: ' + error.message;
+        this.isLoading = false;
+      }
+    });
   }
 }

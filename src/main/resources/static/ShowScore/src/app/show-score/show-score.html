@@ -35,7 +35,7 @@
             </div>
           </div>
 
-          @if (canUpdateScore()) {
+          @if (canUpdateScore(match)) {
             <div class="score-update-section">
               <h4>Update Score</h4>
               <div class="score-inputs">
@@ -74,5 +74,53 @@
     </div>
   }
 
-  <button (click)="loadMatches()" class="refresh-btn">Refresh</button>
+  <div class="button-container">
+    <button (click)="loadMatches()" class="refresh-btn">Refresh</button>
+    @if (currentUserRole === 'ADMIN') {
+      <button (click)="toggleAddMatchForm()" [ngClass]="showAddMatchForm ? 'cancel-btn' : 'add-match-btn'">
+        {{ showAddMatchForm ? 'Cancel' : 'Add New Match' }}
+      </button>
+    }
+  </div>
+
+  @if (showAddMatchForm && currentUserRole === 'ADMIN') {
+    <div class="add-match-form">
+      <h3>Add New Match</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="team1">Team 1:</label>
+          <input type="text" id="team1" [(ngModel)]="newMatch.team1" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label for="team2">Team 2:</label>
+          <input type="text" id="team2" [(ngModel)]="newMatch.team2" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label for="team1Score">Team 1 Score:</label>
+          <input type="number" id="team1Score" [(ngModel)]="newMatch.team1Score" class="form-input" min="0" value="0" readonly>
+        </div>
+        <div class="form-group">
+          <label for="team2Score">Team 2 Score:</label>
+          <input type="number" id="team2Score" [(ngModel)]="newMatch.team2Score" class="form-input" min="0" value="0" readonly>
+        </div>
+        <div class="form-group">
+          <label for="sportType">Sport Type:</label>
+          <input type="text" id="sportType" [(ngModel)]="newMatch.sportType" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label for="date">Date:</label>
+          <input type="date" id="date" [(ngModel)]="newMatch.date" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label for="startTime">Start Time:</label>
+          <input type="time" id="startTime" [(ngModel)]="newMatch.startTime" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label for="endTime">End Time:</label>
+          <input type="time" id="endTime" [(ngModel)]="newMatch.endTime" class="form-input">
+        </div>
+      </div>
+      <button (click)="createNewMatch()" class="submit-btn">Create Match</button>
+    </div>
+  }
 </div>

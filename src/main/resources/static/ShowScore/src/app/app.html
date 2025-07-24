@@ -3,11 +3,11 @@
     <h1>Show Score</h1>
     <div class="divider"></div>
     <p>Test WebSocket</p>
+
+    @if (isLoginPage) {
+      <router-outlet />
+    } @else {
+      <app-show-score></app-show-score>
+    }
   </div>
-
-  @if (!isLoginPage) {
-    <app-show-score></app-show-score>
-  }
 </main>
-
-<router-outlet />

@@ -61,8 +61,8 @@ Run the Spring Boot Backend: You can run the application directly from your Inte
 ./gradlew bootRun
 
 ### 4. Accessing the Application
-Application: http://localhost:8080
-H2 Console: http://localhost:8080/h2-console
+Application: http://localhost:8081
+H2 Console: http://localhost:8081/h2-console
 JDBC URL: jdbc:h2:file:./showscore
 User Name: sa
 Password: (leave empty)
